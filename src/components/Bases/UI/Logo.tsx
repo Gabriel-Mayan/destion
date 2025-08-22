@@ -1,13 +1,12 @@
 "use client";
 
-import { SxProps, Theme } from "@mui/material";
+import { SxProps, Theme, useTheme } from "@mui/material";
 
 import BaseImage from "@components/Bases/Elements/BaseImage";
 
 type TImage = {
   target?: string;
   src?: string;
-  clean?: boolean;
   style?: any;
   alt?: string;
   href?: string | null;
@@ -18,7 +17,10 @@ type TImage = {
   size?: "min" | "smaller" | "medium" | "bigger" | "huge";
 };
 
-export default function Logo({ href, src, clean, container, sx, target, size = "smaller" }: TImage) {
+export default function Logo({ href, src, container, sx, target, size = "smaller" }: TImage) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
   const sizeStyles = {
     min: { width: 50, height: "auto" },
     smaller: { width: 100, height: "auto" },
@@ -31,7 +33,7 @@ export default function Logo({ href, src, clean, container, sx, target, size = "
 
   return (
     <BaseImage
-      src={src ?? `/assets/logo${clean ? "-vazia" : ""}.png`}
+      src={src ?? `/assets/logo${isDark ? "-dark" : ""}.png`}
       alt={"Logo da Delta Capital"}
       sx={{ ...selectedSize, ...sx }}
       href={href === null ? undefined : (href ?? "/")}

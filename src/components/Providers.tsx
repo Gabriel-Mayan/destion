@@ -9,6 +9,8 @@ import toastConfig from "@config/toast.config";
 import { SocketProvider } from "@context/SocketContext";
 import { CustomThemeProvider } from "@context/ThemeContext";
 
+import LayoutManager from "@components/Bases/Layout/LayoutManager";
+
 interface ProvidersProps {
   children: ReactNode;
 }
@@ -18,8 +20,10 @@ export default function Providers({ children }: ProvidersProps) {
     <CustomThemeProvider>
       <SessionProvider>
         <SocketProvider>
-          <ToastContainer {...toastConfig} />
-          {children}
+          <LayoutManager>
+            <ToastContainer {...toastConfig} />
+            {children}
+          </LayoutManager>
         </SocketProvider>
       </SessionProvider>
     </CustomThemeProvider>
