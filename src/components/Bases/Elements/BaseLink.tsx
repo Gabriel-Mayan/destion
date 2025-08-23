@@ -2,13 +2,13 @@
 
 import React from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Link as MuiLink, TypographyProps } from "@mui/material";
+import { Link as MuiLink, SxProps, TypographyProps } from "@mui/material";
 
 interface SmoothScrollLinkProps {
   href: string;
   children?: React.ReactNode;
   onClick?: () => void;
-  sx?: any;
+  sx?: SxProps;
   variant?: TypographyProps["variant"];
   font?: "raleway" | "roboto";
   underline?: any;

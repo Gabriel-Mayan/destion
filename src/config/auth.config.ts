@@ -1,15 +1,21 @@
 import { NextAuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { api } from "@services/api.service";
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+
     CredentialsProvider({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text" },
-        password: { label: "Senha", type: "password" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials) return null;
@@ -34,11 +40,21 @@ export const authOptions: NextAuthOptions = {
     maxAge: 60 * 60 * 24 * 30,
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) return { ...token, ...user };
+    async jwt({ token, user, account }) {
+      if (account?.provider === "google" && user) {
+        token.id = user.id ?? token.id;
+        token.name = user.name ?? token.name;
+        token.email = user.email ?? token.email;
+        token.picture = (user as any).picture ?? token.picture;
+      }
+
+      if (account?.provider === "credentials" && user) {
+        return { ...token, ...user };
+      }
 
       return token;
     },
+
     async session({ session, token }) {
       return {
         ...session,
@@ -46,6 +62,7 @@ export const authOptions: NextAuthOptions = {
       };
     },
   },
+
   pages: {
     error: "/login",
     signIn: "/login",
