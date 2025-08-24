@@ -9,6 +9,7 @@ import BaseText from "@components/Bases/Elements/BaseText";
 export interface IChatRoom {
   id: string;
   name: string;
+  creator: { id: string; name: string };
   description?: string;
   category: string;
   membersCount: number;
@@ -28,10 +29,11 @@ export const ChatRoomCard: React.FC<ChatRoomCardProps> = ({ room, isMember = fal
     <Card
       sx={{
         width: "20vw",
-        height: "25vh",
         display: "flex",
         flexDirection: "column",
         cursor: "pointer",
+        borderRadius: 4,
+        p: 2,
         transition: "0.2s all",
         "&:hover": { boxShadow: 3 },
       }}>

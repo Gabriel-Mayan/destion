@@ -2,9 +2,11 @@
 import NextAuth from "next-auth";
 
 type TUserSession = {
-  id: string;
-  nome: string;
-  email: string;
+  user: {
+    id: string;
+    nome: string;
+    email: string;
+  };
   token: string;
 };
 

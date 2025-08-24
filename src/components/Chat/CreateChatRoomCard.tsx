@@ -1,26 +1,30 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { Add } from "@mui/icons-material";
 import { Card, CardContent } from "@mui/material";
 
 import BaseText from "@components/Bases/Elements/BaseText";
 
 export const CreateChatRoomCard = () => {
+  const router = useRouter();
+
   const handleCreateRoom = () => {
-    // chamada de API para criar a sala
+    router.push("/home/chat/create");
   };
 
   return (
     <Card
       sx={{
-        height: "25vh",
-        width: "20vw",
+        width: { xs: "100%", sm: "48%", md: "31%", lg: "20vw" },
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
         border: "2px dashed #aaa",
+        borderRadius: 4,
         cursor: "pointer",
         transition: "0.2s all",
         "&:hover": {
