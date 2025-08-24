@@ -1,9 +1,11 @@
+/* eslint-disable no-unused-vars */
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { api } from "@services/api.service";
 
+// TODO Eventualmente fazer ajustes para usar o token do backend e a autenticação do google
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
@@ -23,23 +25,48 @@ export const authOptions: NextAuthOptions = {
         const { email, password } = credentials;
 
         try {
-          const resposta = await api({
-            url: `api/auth/login`,
+          const response = await api({
+            url: "auth/login",
+            method: "POST",
             data: { email, password },
           });
 
-          return resposta?.token ? resposta : null;
+          return response?.token ? response : null;
         } catch {
           return null;
         }
       },
     }),
   ],
+
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60 * 24 * 30,
+    maxAge: 60 * 60 * 24 * 30, // 30 dias
   },
+
   callbacks: {
+    async signIn({ account, profile }) {
+      // 🔹 Fluxo social login
+      if (account?.provider === "google") {
+        try {
+          await api({
+            url: "auth/social-login",
+            method: "POST",
+            data: {
+              email: profile?.email,
+              name: profile?.name,
+              avatarUrl: profile?.image,
+            },
+          });
+
+          return true;
+        } catch (err) {
+          return false;
+        }
+      }
+      return true;
+    },
+
     async jwt({ token, user, account }) {
       if (account?.provider === "google" && user) {
         token.id = user.id ?? token.id;

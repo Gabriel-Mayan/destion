@@ -1,5 +1,3 @@
-import { getServerSession } from "@services/auth.service";
-
 type TFetch = {
   url: string;
   token?: string;
@@ -11,11 +9,9 @@ type TFetch = {
 };
 
 export const api = async ({ url = "", token = "", method = "POST", headers = {}, data, params, timeout = 600000 }: TFetch) => {
-  const session = await getServerSession();
-
   const baseUrl = process.env.API_URL;
   const urlRequest = new URL(baseUrl + url);
-  const accessToken = `Bearer ${token ?? session?.user?.token ?? ""}`;
+  const accessToken = token ? `Bearer ${token}` : "";
 
   if (params) {
     Object.entries(params).forEach(([key, value]) => {

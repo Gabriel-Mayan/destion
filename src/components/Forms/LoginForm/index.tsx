@@ -4,13 +4,13 @@ import { z } from "zod";
 import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
-import { Google } from "@mui/icons-material";
+// import { Google } from "@mui/icons-material";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import FormContainer from "@components/Forms/Container";
 import BaseLink from "@components/Bases/Elements/BaseLink";
 import BasicInput from "@components/Bases/Inputs/BasicInput";
-import BaseButton from "@components/Bases/Elements/BaseButton";
+// import BaseButton from "@components/Bases/Elements/BaseButton";
 import PasswordInput from "@components/Bases/Inputs/PasswordInput";
 
 import { showToast } from "@utils/notify.util";
@@ -27,7 +27,7 @@ export default function FormLogin() {
   const { errors } = formState;
   const [isLoading, setIsLoading] = useState(false);
 
-  async function onSubmit(data: IFormData) {
+  async function handleCredentialsLogin(data: IFormData) {
     setIsLoading(true);
 
     const result = await signIn("credentials", {
@@ -43,22 +43,42 @@ export default function FormLogin() {
       return;
     }
 
+    showToast({ type: "success", message: "Logged in with email successfully!" });
+
     window.location.reload();
   }
 
+  // async function handleGoogleLogin() {
+  //   setIsLoading(true);
+
+  //   const result = await signIn("google", { callbackUrl: "/" });
+
+  //   setIsLoading(false);
+
+  //   if (result?.error) {
+  //     showToast({ type: "error", message: "Google login failed" });
+  //     return;
+  //   }
+
+  //   showToast({ type: "success", message: "Logged in with Google successfully!" });
+
+  //   window.location.href = result?.url || "/";
+  // }
+
   return (
-    <FormContainer handleSubmit={handleSubmit(onSubmit)} loading={isLoading} nextStepText="Sign in">
+    <FormContainer handleSubmit={handleSubmit(handleCredentialsLogin)} loading={isLoading} nextStepText="Sign in">
       <BasicInput name="email" label="Email" control={control} error={errors.email?.message} />
       <PasswordInput name="password" label="Password" control={control} error={errors.password?.message} />
 
+      {/* TODO Eventualmente resolver esse problema
       <BaseButton
         text="Sign in with Google"
         startIcon={<Google />}
-        onClick={() => signIn("google", { callbackUrl: "/" })}
+        onClick={handleGoogleLogin}
         className="mt-4 w-full bg-red-500 text-white py-2 rounded"
-      />
+      /> */}
 
-      <BaseLink href="/recovery" sx={{ alignSelf: "flex-end" }} text={"Forgot your password?"} />
+      <BaseLink href="/recovery" sx={{ alignSelf: "flex-end", fontSize: 12, mt: -2 }} text={"Forgot your password?"} />
     </FormContainer>
   );
 }

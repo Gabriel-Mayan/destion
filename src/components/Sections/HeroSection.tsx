@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import PlayCircle from "@mui/icons-material/PlayCircle";
 import { Box, Button, Container, Grid } from "@mui/material";
 
@@ -9,6 +10,7 @@ import BaseImage from "@components/Bases/Elements/BaseImage";
 import YoutubeVideoModal from "@components/Modal/YoutubeVideoModal";
 
 const data = {
+  ctaText: "Register Here",
   title: "Chat made simple,",
   title2: "Connecting with Destion",
   imageSrc: "/assets/hero-img.png",
@@ -19,6 +21,7 @@ const data = {
 };
 
 export default function HeroSection() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   return (
@@ -64,6 +67,10 @@ export default function HeroSection() {
           <BaseText variant="h3" fontWeight={1000} text={data.title} sx={{ gridColumn: "span 2", mb: -4 }} />
           <BaseText variant="h3" fontWeight={1000} text={data.title2} sx={{ gridColumn: "span 2", mb: -2 }} />
           <BaseText variant="h6" color="text.secondary" text={data.description} sx={{ gridColumn: "span 2", textAlign: "justify" }} />
+
+          <Button variant="contained" color="primary" sx={{ justifySelf: "flex-start" }} onClick={() => router.push("/register")}>
+            {data.ctaText}
+          </Button>
 
           <Button onClick={() => setOpen(true)} sx={{ justifySelf: { xs: "center", md: "flex-end" }, fontWeight: 600 }}>
             <PlayCircle sx={{ fontSize: 32, mr: 1, color: "primary.main" }} />
