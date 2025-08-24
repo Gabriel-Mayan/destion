@@ -1,7 +1,9 @@
+// Sidebar.tsx
 "use client";
 
 import Link from "next/link";
-import { JSX, useState } from "react";
+import { useState } from "react";
+import { signOut } from "next-auth/react";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Box, Collapse, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 
@@ -9,70 +11,57 @@ import BaseText from "@components/Bases/Elements/BaseText";
 
 import getNavigation from "./Navigation";
 
-type NavigationItemType = {
-  kind: "item";
+interface SidebarProps {
+  session: any;
+  isOpen: boolean;
+}
+
+interface INavigationItem {
   title: string;
-  segment: string;
+  segment?: string;
   icon: React.ReactNode;
-};
+  isOpen: boolean;
+  action?: string;
+}
 
-type NavigationGroupType = {
-  kind: "group";
-  title: string;
-  icon: React.ReactNode;
-  children: NavigationType[];
-};
-
-type NavigationHeaderType = {
-  kind: "header";
-  title: string;
-};
-
-type NavigationDividerType = {
-  kind: "divider";
-};
-
-type NavigationType = NavigationItemType | NavigationGroupType | NavigationHeaderType | NavigationDividerType;
-
-export default function Sidebar({ session, isOpen }: { session: any; isOpen: boolean }) {
-  const navigation = getNavigation(session.user);
+export default function Sidebar({ isOpen }: SidebarProps) {
+  const navigation = getNavigation();
 
   return (
-    <Box sx={{ maxHeight: "100vh", overflowY: "auto", overflowX: "hidden", pr: 1 }}>
-      <List component="nav">{navigation.map((item, index) => render(item, index, isOpen))}</List>
+    <Box sx={{ width: isOpen ? 250 : 72, height: "100%", overflowY: "auto", bgcolor: "background.paper" }}>
+      <List component="nav" sx={{ p: 0 }}>
+        {navigation.map((item, index) => renderItem(item, index, isOpen))}
+      </List>
     </Box>
   );
 }
 
-function render(item: NavigationType, index: number, isOpen: boolean): JSX.Element | null {
+function renderItem(item: any, index: number, isOpen: boolean) {
   switch (item.kind) {
     case "header":
-      return isOpen ? <BaseText key={index} text={item.title} sx={{ p: 1, color: "text.secondary", fontSize: "0.7rem" }} /> : null;
-
+      return isOpen ? <BaseText key={index} text={item.title} sx={{ px: 2, py: 1, fontSize: "0.7rem", color: "text.secondary" }} /> : null;
     case "divider":
-      return <Divider key={index} sx={{ mt: 1 }} />;
-
+      return <Divider key={index} />;
     case "group":
       return <NavigationGroup key={index} group={item} isOpen={isOpen} />;
-
     case "item":
     default:
-      return <NavigationItem key={index} title={item.title} segment={item.segment} icon={item.icon} isOpen={isOpen} />;
+      return <NavigationItem key={index} {...item} isOpen={isOpen} />;
   }
 }
 
-function NavigationGroup({ group, isOpen }: { group: NavigationGroupType; isOpen: boolean }) {
+function NavigationGroup({ group, isOpen }: { group: any; isOpen: boolean }) {
   const [open, setOpen] = useState(false);
-  const handleToggle = () => setOpen((prev) => !prev);
+  const toggle = () => setOpen(!open);
 
   return (
-    <Box>
-      <ListItem disablePadding sx={{ display: "block" }}>
-        <ListItemButton onClick={handleToggle} sx={{ minHeight: 48, justifyContent: isOpen ? "initial" : "center", px: 2 }}>
-          <ListItemIcon sx={{ minWidth: 0, mr: isOpen ? 3 : "auto", justifyContent: "center" }}>{group.icon}</ListItemIcon>
+    <>
+      <ListItem disablePadding>
+        <ListItemButton onClick={toggle} sx={{ px: 2, justifyContent: isOpen ? "initial" : "center" }}>
+          <ListItemIcon sx={{ minWidth: 0, mr: isOpen ? 2 : "auto", justifyContent: "center" }}>{group.icon}</ListItemIcon>
           {isOpen && (
             <>
-              <ListItemText primary={<BaseText sx={{ fontSize: "0.75rem" }} text={group.title} />} />
+              <ListItemText primary={<BaseText text={group.title} sx={{ fontSize: "0.8rem" }} />} />
               {open ? <ExpandLess /> : <ExpandMore />}
             </>
           )}
@@ -81,17 +70,28 @@ function NavigationGroup({ group, isOpen }: { group: NavigationGroupType; isOpen
 
       <Collapse in={open && isOpen} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          {group.children.map((child, index) => render(child, index, isOpen))}
+          {group.children.map((child: any, idx: number) => renderItem(child, idx, isOpen))}
         </List>
       </Collapse>
-    </Box>
+    </>
   );
 }
 
-function NavigationItem({ title, segment, icon, isOpen }: { title: string; segment: string; icon: React.ReactNode; isOpen: boolean }) {
+function NavigationItem({ title, segment, icon, isOpen, action }: INavigationItem) {
+  const handleClick = () => {
+    if (action === "logout") {
+      signOut({ callbackUrl: "/login" });
+      return;
+    }
+  };
+
   return (
     <ListItem disablePadding sx={{ display: "block" }}>
-      <ListItemButton component={Link} href={segment} sx={{ minHeight: 48, justifyContent: isOpen ? "initial" : "center", px: 2 }}>
+      <ListItemButton
+        component={segment && action !== "logout" ? Link : "button"}
+        href={segment}
+        onClick={handleClick}
+        sx={{ minHeight: 48, justifyContent: isOpen ? "initial" : "center", px: 2 }}>
         <ListItemIcon sx={{ minWidth: 0, mr: isOpen ? 2 : "auto", justifyContent: "center" }}>{icon}</ListItemIcon>
         {isOpen && <ListItemText primary={<BaseText sx={{ fontSize: "0.8rem" }} text={title} />} />}
       </ListItemButton>

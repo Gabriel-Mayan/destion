@@ -1,9 +1,9 @@
-/* eslint-disable no-console */
 "use client";
 
 import { z } from "zod";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import FormContainer from "@components/Forms/Container";
@@ -22,6 +22,7 @@ export default function ChangePasswordForm({ recoveryId }: { recoveryId: string 
     resolver: zodResolver(schema),
   });
 
+  const router = useRouter();
   const { errors } = formState;
   const [isLoading, setIsLoading] = useState(false);
 
@@ -35,8 +36,11 @@ export default function ChangePasswordForm({ recoveryId }: { recoveryId: string 
       });
 
       showToast({ message: response.data.message, type: "success" });
-    } catch (error) {
-      console.log(error);
+
+      router.push("/login");
+    } catch (error: any) {
+      showToast({ message: error.message, type: "error" });
+
       setIsLoading(false);
     } finally {
       setIsLoading(false);

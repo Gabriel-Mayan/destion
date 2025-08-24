@@ -1,6 +1,6 @@
-import { loginMiddleware } from "./login.middleware";
+import { authRedirectMiddleware } from "./auth-redirect.middleware";
 import { sissionMiddleware } from "./session.middleware";
 
-const middlewaresAtivos = [loginMiddleware, sissionMiddleware];
+const middlewaresAtivos = [authRedirectMiddleware, sissionMiddleware];
 
 export default middlewaresAtivos;

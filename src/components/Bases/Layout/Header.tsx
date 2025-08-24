@@ -9,11 +9,7 @@ import BaseLink from "@components/Bases/Elements/BaseLink";
 
 const links = [
   { name: "Home", url: "/#hero" },
-  // { name: "Features", url: "/#features" },
-  // { name: "Download", url: "/#download" },
-  // { name: "Pricing", url: "/#pricing" },
-  // { name: "FAQ", url: "/#faq" },
-  // { name: "Contact", url: "/#contact" },
+  { name: "Register", url: "/register" },
   { name: "Login", url: "/login" },
 ];
 

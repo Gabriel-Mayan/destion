@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable no-unused-vars */
 "use client";
 
 import { z } from "zod";
@@ -30,14 +30,12 @@ export default function RecoveryPasswordForm() {
     try {
       setIsLoading(true);
 
-      const response = await app({ url: "api/auth/recovery-password", data });
-
-      showToast({ message: response.data.message, type: "success" });
+      await app({ url: "api/auth/recovery-password", data });
     } catch (error) {
-      console.log(error);
-
       setIsLoading(false);
     } finally {
+      showToast({ message: "If the user is registered, a verification email has been sent.", type: "success" });
+
       setIsLoading(false);
     }
   }
