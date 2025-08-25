@@ -13,15 +13,15 @@ export default async function ChatPage() {
   const response = await app({ url: "api/chat/list", token: session?.user.token, method: "GET" });
   const chats: IChatRoom[] = response.data;
 
-  const userRooms = chats.filter((chat) => chat.isParticipant);
-  const publicRooms = chats.filter((chat) => chat.isPublic);
+  const userRooms = chats && chats.length && chats.filter((chat) => chat.isParticipant);
+  const publicRooms = chats && chats.length && chats.filter((chat) => chat.isPublic);
 
   return (
-    <Container>
+    <Container sx={{ mt: 4, mb: 8 }}>
       <BaseText variant="h3" font="raleway" fontWeight="bold" text="Chat Rooms" />
       <BaseText variant="h6" mb={2} text="Your Rooms" />
 
-      <ChatRoomsList userRooms={userRooms} publicRooms={publicRooms} token={session?.user.token!} />
+      <ChatRoomsList userRooms={userRooms !== 0 ? userRooms : []} publicRooms={publicRooms !== 0 ? publicRooms : []} token={session?.user.token!} />
     </Container>
   );
 }

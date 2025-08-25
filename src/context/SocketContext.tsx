@@ -27,7 +27,7 @@ export const SocketProvider = ({ children }: SocketProviderType) => {
   const [socketIsConnected, setSocketIsConnected] = useState(false);
 
   useEffect(() => {
-    if (!session || !socket) return;
+    if (!session) return;
 
     const initialSocket = io(socketEndpoint, {
       transports: ["websocket", "polling"],
@@ -49,14 +49,10 @@ export const SocketProvider = ({ children }: SocketProviderType) => {
       setSocketIsConnected(false);
     });
 
-    initialSocket.on("boas-vindas", (data) => {
-      console.log(data.mensagem);
-    });
-
     return () => {
       initialSocket.disconnect();
     };
-  }, [session, socket]);
+  }, [session]);
 
   return <SocketContext.Provider value={{ socket, socketIsConnected }}>{children}</SocketContext.Provider>;
 };

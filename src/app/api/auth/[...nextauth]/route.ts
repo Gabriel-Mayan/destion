@@ -1,9 +1,13 @@
-/* eslint-disable no-unused-vars */
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions, User } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { api } from "@services/api.service";
+
+interface CustomUser extends User {
+  token: string;
+  expiresIn: number;
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -30,7 +34,7 @@ export const authOptions: NextAuthOptions = {
             data: { email, password },
           });
 
-          return response?.token ? response : null;
+          return response?.token ? (response as CustomUser) : null;
         } catch {
           return null;
         }
@@ -40,12 +44,11 @@ export const authOptions: NextAuthOptions = {
 
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60 * 24 * 30, // 30 dias
+    maxAge: 60 * 60 * 24 * 30,
   },
 
   callbacks: {
     async signIn({ account, profile }) {
-      // 🔹 Fluxo social login
       if (account?.provider === "google") {
         try {
           await api({
@@ -57,9 +60,8 @@ export const authOptions: NextAuthOptions = {
               avatarUrl: profile?.image,
             },
           });
-
           return true;
-        } catch (err) {
+        } catch {
           return false;
         }
       }
@@ -75,7 +77,15 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (account?.provider === "credentials" && user) {
-        return { ...token, ...user };
+        const u = user as CustomUser;
+        token.token = u.token;
+
+        (token as any).accessTokenExpires = Date.now() + u.expiresIn * 1000;
+        return { ...token, ...user } as any;
+      }
+
+      if ((token as any).accessTokenExpires && Date.now() >= (token as any).accessTokenExpires) {
+        return { ...token, error: "AccessTokenExpired" };
       }
 
       return token;
@@ -85,6 +95,7 @@ export const authOptions: NextAuthOptions = {
       return {
         ...session,
         user: token,
+        error: (token as any).error,
       };
     },
   },

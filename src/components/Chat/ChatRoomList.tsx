@@ -40,9 +40,7 @@ export const ChatRoomsList: React.FC<Props> = ({ userRooms, publicRooms, token }
           display: "grid",
           gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "repeat(3, 1fr)", lg: "repeat(4, 1fr)" },
         }}>
-        {userRooms.map((room) => (
-          <ChatRoomCard key={room.id} room={room} isMember onEnter={handleEnterRoom} />
-        ))}
+        {userRooms && userRooms.map((room) => <ChatRoomCard key={room.id} room={room} isMember onEnter={handleEnterRoom} />)}
 
         <CreateChatRoomCard />
       </Box>
@@ -57,9 +55,7 @@ export const ChatRoomsList: React.FC<Props> = ({ userRooms, publicRooms, token }
           display: "grid",
           gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "repeat(3, 1fr)", lg: "repeat(4, 1fr)" },
         }}>
-        {publicRooms.map((room) => (
-          <ChatRoomCard key={room.id} room={room} onJoin={handleEnterRoom} />
-        ))}
+        {publicRooms && publicRooms.map((room) => <ChatRoomCard key={room.id} room={room} onJoin={handleEnterRoom} />)}
 
         <CreateChatRoomCard />
       </Box>

@@ -24,11 +24,11 @@ export default async function ChatPage({ params }: IPageProps) {
       <BaseText variant="h4" font="raleway" fontWeight="bold" text={chat.title} />
       <BaseText variant="h6" mb={2} text={chat.description} />
 
-      <Paper sx={{ display: "flex", flexDirection: "column", mx: "auto", my: "auto", p: 2, pb: 0 }}>
+      <Paper sx={{ display: "flex", borderRadius: 2, flexDirection: "column", mx: "auto", my: "auto", p: 2, pb: 0 }}>
         <ChatParticipants creator={chat.creator} participants={chat.participants} />
         <Divider sx={{ my: 2 }} />
         <ChatMessageList messages={chat.messages} currentUserId={session?.user.user.id!} />
-        <SendMessageForm chatId={chatId} token={session?.user.token!} />
+        <SendMessageForm chatId={chatId} session={session} />
       </Paper>
     </Container>
   );
