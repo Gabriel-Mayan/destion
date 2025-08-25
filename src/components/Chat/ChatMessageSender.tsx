@@ -3,10 +3,10 @@
 import { useForm } from "react-hook-form";
 import { IconButton, InputAdornment } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 
 import FormContainer from "@components/Forms/Container";
 import BasicInput from "@components/Bases/Inputs/BasicInput";
+import EmojiPicker from "@components/Bases/UI/EmojiPicker";
 
 import { app } from "@services/app.service";
 
@@ -19,7 +19,7 @@ interface IMessageForm {
 }
 
 export const ChatMessageSender = ({ chatId, session }: { chatId: string; session: Session | null }) => {
-  const { control, handleSubmit, reset, formState } = useForm<IMessageForm>({
+  const { control, handleSubmit, reset, setValue, getValues, formState } = useForm<IMessageForm>({
     defaultValues: { content: "" },
   });
 
@@ -36,8 +36,10 @@ export const ChatMessageSender = ({ chatId, session }: { chatId: string; session
     }
   };
 
-  const handleEmojiClick = () => {
-    showToast({ message: "Emoji picker not implemented yet", type: "info" });
+  const handleEmojiSelect = (emoji: any) => {
+    const current = getValues("content");
+
+    setValue("content", current + emoji.native);
   };
 
   return (
@@ -51,9 +53,7 @@ export const ChatMessageSender = ({ chatId, session }: { chatId: string; session
         sx={{ flex: 1, mb: 0 }}
         endAdornment={
           <InputAdornment position="end" sx={{ display: "flex", gap: 0.5 }}>
-            <IconButton onClick={handleEmojiClick} color="primary">
-              <InsertEmoticonIcon />
-            </IconButton>
+            <EmojiPicker onSelect={handleEmojiSelect} />
 
             <IconButton type="submit" color="primary">
               <SendIcon />

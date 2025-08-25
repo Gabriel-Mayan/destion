@@ -1,8 +1,9 @@
-"use client";
-
 import React from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Avatar, Box, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
+
+import { Avatar } from "@components/Bases/UI/Avatar";
+import BaseText from "@components/Bases/Elements/BaseText";
 
 interface User {
   id: string;
@@ -29,17 +30,16 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ creator, participants, c
         px: 1,
       }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <Avatar src={creator.avatarUrl || undefined} sx={{ width: 48, height: 48, fontSize: 18 }}>
-          {creator.name[0]}
-        </Avatar>
+        <Avatar name={creator.name} isCreator size={48} />
 
         <Box>
-          <Typography variant="subtitle1" fontWeight="bold">
+          <BaseText variant="subtitle1" font="raleway" sx={{ fontWeight: "bold" }}>
             {chatName || creator.name}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
+          </BaseText>
+
+          <BaseText variant="body2" color="text.secondary">
             {participants.length > 0 ? `${allParticipants.length} participant${allParticipants.length > 1 ? "s" : ""}` : "Just you"}
-          </Typography>
+          </BaseText>
         </Box>
       </Box>
 

@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Avatar, Box, Paper, useTheme } from "@mui/material";
+import { Box, Paper, useTheme } from "@mui/material";
 
 import BaseText from "@components/Bases/Elements/BaseText";
+import { Avatar } from "@components/Bases/UI/Avatar";
 
 import { SocketContext } from "@/context/SocketContext";
 
@@ -80,9 +81,7 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({ initialMessage
               gap: 1,
               alignItems: "flex-start",
             }}>
-            <Avatar src={msg.sender.avatarUrl || undefined} sx={{ width: 32, height: 32, fontSize: 14, bgcolor: theme.palette.chat.avatarBg }}>
-              {msg.sender.name[0]}
-            </Avatar>
+            <Avatar name={msg.sender.name} size={32} isCreator={false} />
             <Paper
               sx={{
                 p: 1,
