@@ -1,6 +1,6 @@
 "use client";
 
-import { Grid, LinearProgress } from "@mui/material";
+import { Grid, LinearProgress, SxProps, Theme } from "@mui/material";
 
 import BaseButton from "@components/Bases/Elements/BaseButton";
 
@@ -13,11 +13,12 @@ type TGridForm = {
   loading?: boolean;
   nextStepText?: string;
   onPreviousStep?: () => void;
+  sx?: SxProps<Theme>;
 };
 
-export default function FormContainer({ children, loading, handleSubmit, nextStepText, fullLoaderMessage, onPreviousStep }: TGridForm) {
+export default function FormContainer({ children, loading, handleSubmit, nextStepText, fullLoaderMessage, onPreviousStep, sx }: TGridForm) {
   return (
-    <Grid component="form" container direction="column" spacing={1} onSubmit={handleSubmit} sx={{ width: "100%", py: 2 }}>
+    <Grid component="form" container direction="column" spacing={1} onSubmit={handleSubmit} sx={{ width: "100%", py: 2, ...sx }}>
       {children}
 
       <Grid container sx={{ width: "100%", mt: 2 }} justifyContent={onPreviousStep ? "space-between" : "flex-end"}>

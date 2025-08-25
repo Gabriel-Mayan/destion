@@ -1,38 +1,43 @@
+/* eslint-disable no-unused-vars */
 "use client";
 
-/* eslint-disable no-console */
-import { Box, Container, Divider } from "@mui/material";
+import { useRouter } from "next/navigation";
+import { Box, Divider } from "@mui/material";
 
 import BaseText from "@components/Bases/Elements/BaseText";
-import { ChatRoomCard, IChatRoom } from "@components/Chat/ChatRoomCard";
+import { ChatRoomCard, IChatRoom } from "@components/Cards/ChatRoomCard";
 
-import { CreateChatRoomCard } from "./CreateChatRoomCard";
+import { app } from "@services/app.service";
+
+import { showToast } from "@utils/notify.util";
+
+import { CreateChatRoomCard } from "../Cards/CreateChatRoomCard";
 
 interface Props {
+  token: string;
   userRooms: IChatRoom[];
   publicRooms: IChatRoom[];
 }
 
-export const ChatRoomsList: React.FC<Props> = ({ userRooms, publicRooms }) => {
-  const handleEnterRoom = (room: IChatRoom) => {
-    console.log("Entering room:", room);
-    // router.push(`/chat/${room.id}`)
-  };
+export const ChatRoomsList: React.FC<Props> = ({ userRooms, publicRooms, token }) => {
+  const router = useRouter();
 
-  const handleJoinRoom = (room: IChatRoom) => {
-    console.log("Joining room:", room);
-    // chamada de API para entrar na sala
+  const handleEnterRoom = async (chat: IChatRoom) => {
+    try {
+      await app({ url: "api/chat/join", token, data: { chatId: chat.id } });
+
+      router.push(`/home/chat/${chat.id}`);
+    } catch (error) {
+      showToast({ type: "error", message: "Error entering chat, please try again in a few moments" });
+    }
   };
 
   return (
-    <Container sx={{ p: 3 }}>
-      <BaseText variant="h4" font="raleway" fontWeight="bold" mb={2} text="Chat Rooms" />
-      <BaseText variant="h6" mb={2} text="Your Rooms" />
-
+    <Box>
       <Box
         sx={{
-          display: "grid",
           gap: 3,
+          display: "grid",
           gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "repeat(3, 1fr)", lg: "repeat(4, 1fr)" },
         }}>
         {userRooms.map((room) => (
@@ -48,16 +53,16 @@ export const ChatRoomsList: React.FC<Props> = ({ userRooms, publicRooms }) => {
 
       <Box
         sx={{
-          display: "grid",
           gap: 3,
+          display: "grid",
           gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "repeat(3, 1fr)", lg: "repeat(4, 1fr)" },
         }}>
         {publicRooms.map((room) => (
-          <ChatRoomCard key={room.id} room={room} onJoin={handleJoinRoom} />
+          <ChatRoomCard key={room.id} room={room} onJoin={handleEnterRoom} />
         ))}
 
         <CreateChatRoomCard />
       </Box>
-    </Container>
+    </Box>
   );
 };

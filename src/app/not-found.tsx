@@ -8,9 +8,9 @@ import BaseImage from "@components/Bases/Elements/BaseImage";
 import BaseButton from "@components/Bases/Elements/BaseButton";
 
 const data = {
-  title: "Página Não Encontrada",
-  description: "Desculpe, mas a página que você está procurando não existe...",
-  buttonText: "Página Inicial",
+  title: "Page Not Found",
+  description: "Sorry, the page you are looking for does not exist...",
+  buttonText: "Home Page",
 };
 
 export default function NotFoundPage() {

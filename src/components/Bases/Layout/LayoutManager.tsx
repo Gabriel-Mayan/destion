@@ -12,7 +12,8 @@ export default function LayoutManager({ children }: { children: React.ReactNode 
 
   const isProfileRoute = pathname.startsWith("/home");
 
+  //TODO Resolver isso aqui eventualmente
   const Layout = isProfileRoute ? (props: any) => <AuthenticatedLayout {...props} session={session} /> : DefaultLayout;
 
-  return <Layout>{children}</Layout>;
+  return <DefaultLayout>{children}</DefaultLayout>;
 }

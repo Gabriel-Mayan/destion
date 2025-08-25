@@ -37,7 +37,7 @@ export default function CreateChatForm({ token }: { token: string }) {
 
       showToast({ message: response.data?.message || "Chat created successfully!", type: "success" });
 
-      router.push(`/chat/${response.data?.id}`);
+      router.push(`/home/chat/${response.data?.id}`);
     } catch (error: any) {
       showToast({ message: error?.message || "Failed to create chat", type: "error" });
     } finally {

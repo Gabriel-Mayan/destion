@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
-import { Group, Lock, Message } from "@mui/icons-material";
-import { Avatar, Box, Card, CardActions, CardContent, CardHeader } from "@mui/material";
+import { Group, Lock, Message, Star } from "@mui/icons-material";
+import { Avatar, Box, Card, CardActions, CardContent, CardHeader, Chip } from "@mui/material";
 
 import BaseButton from "@components/Bases/Elements/BaseButton";
 import BaseText from "@components/Bases/Elements/BaseText";
@@ -9,6 +9,8 @@ import BaseText from "@components/Bases/Elements/BaseText";
 export interface IChatRoom {
   id: string;
   name: string;
+  isCreator: string;
+  isParticipant: string;
   creator: { id: string; name: string };
   description?: string;
   category: string;
@@ -39,7 +41,14 @@ export const ChatRoomCard: React.FC<ChatRoomCardProps> = ({ room, isMember = fal
       }}>
       <CardHeader
         avatar={<Avatar>{room.name[0]}</Avatar>}
-        title={<BaseText variant="h6" font="raleway" text={room.name} />}
+        title={
+          <Box display="flex" alignItems="center" gap={1}>
+            <BaseText variant="h6" font="raleway" text={room.name} />
+            {room.isCreator && (
+              <Chip size="small" icon={<Star fontSize="small" />} label="Creator" color="warning" sx={{ height: 20, fontSize: "0.7rem" }} />
+            )}
+          </Box>
+        }
         subheader={<BaseText variant="body2" text={room.isPublic ? room.category : "Private"} />}
         action={room.isPublic ? null : <Lock fontSize="small" />}
       />

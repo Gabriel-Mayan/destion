@@ -1,4 +1,7 @@
-import { IChatRoom } from "@components/Chat/ChatRoomCard";
+import { Container } from "@mui/material";
+
+import BaseText from "@components/Bases/Elements/BaseText";
+import { IChatRoom } from "@components/Cards/ChatRoomCard";
 import { ChatRoomsList } from "@components/Chat/ChatRoomList";
 
 import { app } from "@services/app.service";
@@ -10,8 +13,15 @@ export default async function ChatPage() {
   const response = await app({ url: "api/chat/list", token: session?.user.token, method: "GET" });
   const chats: IChatRoom[] = response.data;
 
-  const userRooms = chats.filter((chat) => chat.creator.id === session?.user.user.id);
+  const userRooms = chats.filter((chat) => chat.isParticipant);
   const publicRooms = chats.filter((chat) => chat.isPublic);
 
-  return <ChatRoomsList userRooms={userRooms} publicRooms={publicRooms} />;
+  return (
+    <Container>
+      <BaseText variant="h3" font="raleway" fontWeight="bold" text="Chat Rooms" />
+      <BaseText variant="h6" mb={2} text="Your Rooms" />
+
+      <ChatRoomsList userRooms={userRooms} publicRooms={publicRooms} token={session?.user.token!} />
+    </Container>
+  );
 }
