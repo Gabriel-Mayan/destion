@@ -19,6 +19,8 @@ export default function RegisterPage() {
           padding: 3,
           boxShadow: 3,
           borderRadius: 2,
+          bgcolor: "background.paper",
+          transition: "background 0.3s, box-shadow 0.3s",
         }}>
         <Logo size="medium" />
         <CreateUserForm />
