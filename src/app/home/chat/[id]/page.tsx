@@ -13,7 +13,7 @@ export default async function ChatPage({ params }: IPageProps) {
   const chatId = (await params).id;
   const session = await getServerSession();
 
-  const response = await app({ url: "api/chat/details", data: { chatId }, token: session?.user.token });
+  const response = await app({ url: "api/chat/join", data: { chatId }, token: session?.user.token });
   const chat: any = response.data;
 
   return (

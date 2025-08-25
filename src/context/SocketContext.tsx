@@ -2,10 +2,13 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { type Socket, io } from "socket.io-client";
 import React, { createContext, useEffect, useState } from "react";
 
 import { socketEndpoint } from "@config/socket.config";
+
+import { showToast } from "@utils/notify.util";
 
 type SocketContextType = {
   socket: Socket | null;
@@ -22,6 +25,7 @@ export const SocketContext = createContext<SocketContextType>({
 });
 
 export const SocketProvider = ({ children }: SocketProviderType) => {
+  const pathname = usePathname();
   const { data: session } = useSession();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [socketIsConnected, setSocketIsConnected] = useState(false);
@@ -49,10 +53,23 @@ export const SocketProvider = ({ children }: SocketProviderType) => {
       setSocketIsConnected(false);
     });
 
+    initialSocket.on("message", (event) => {
+      const inChat = pathname === `/home/chat/${event.chatId}`;
+
+      if (!inChat) {
+        showToast({
+          type: "info",
+          message: `[${event.chatName}] ${event.sender.name} - ${event.content}`,
+          theme: "colored",
+          duration: 5000,
+        });
+      }
+    });
+
     return () => {
       initialSocket.disconnect();
     };
-  }, [session]);
+  }, [pathname, session]);
 
   return <SocketContext.Provider value={{ socket, socketIsConnected }}>{children}</SocketContext.Provider>;
 };

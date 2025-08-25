@@ -21,13 +21,10 @@ export default function Providers({ children }: ProvidersProps) {
     <CustomThemeProvider>
       <SessionProvider>
         <SessionWatcher />
-
-        <SocketProvider>
-          <LayoutManager>
-            <ToastContainer {...toastConfig} />
-            {children}
-          </LayoutManager>
-        </SocketProvider>
+        <LayoutManager>
+          <ToastContainer {...toastConfig} />
+          <SocketProvider>{children}</SocketProvider>
+        </LayoutManager>
       </SessionProvider>
     </CustomThemeProvider>
   );

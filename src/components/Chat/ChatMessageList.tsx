@@ -33,18 +33,8 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({ initialMessage
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
   useEffect(() => {
     if (!socket || !socketIsConnected) return;
-
-    socket.emit("join-room", { chatId });
 
     const handleMessage = (msg: Message) => {
       setMessages((prev) => [...prev, msg].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()));
@@ -56,6 +46,12 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({ initialMessage
       socket.off("message", handleMessage);
     };
   }, [socket, socketIsConnected, chatId]);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   return (
     <Box
