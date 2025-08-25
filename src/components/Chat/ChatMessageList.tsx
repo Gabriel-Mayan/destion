@@ -1,9 +1,11 @@
 "use client";
 
-import React from "react";
-import { Avatar, Box, Paper } from "@mui/material";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { Avatar, Box, Paper, useTheme } from "@mui/material";
 
 import BaseText from "@components/Bases/Elements/BaseText";
+
+import { SocketContext } from "@/context/SocketContext";
 
 interface User {
   id: string;
@@ -18,21 +20,57 @@ interface Message {
   createdAt: string;
 }
 
-interface MessageListProps {
-  messages: Message[];
+interface ChatMessageListProps {
+  initialMessages: Message[];
   currentUserId: string;
+  chatId: string;
 }
 
-export const ChatMessageList: React.FC<MessageListProps> = ({ messages, currentUserId }) => {
-  if (messages.length === 0) {
-    return <BaseText variant="body2" color="text.secondary" text="No messages yet" align="center" sx={{ mt: 2 }} />;
-  }
+export const ChatMessageList: React.FC<ChatMessageListProps> = ({ initialMessages, currentUserId, chatId }) => {
+  const theme = useTheme();
+  const { socket, socketIsConnected } = useContext(SocketContext);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    if (!socket || !socketIsConnected) return;
+
+    socket.emit("join-room", { chatId });
+
+    const handleMessage = (msg: Message) => {
+      setMessages((prev) => [...prev, msg].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()));
+    };
+
+    socket.on("message", handleMessage);
+
+    return () => {
+      socket.off("message", handleMessage);
+    };
+  }, [socket, socketIsConnected, chatId]);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 1 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 1,
+        px: 1,
+        flex: 1,
+        overflowY: "auto",
+        maxHeight: "60vh",
+      }}>
+      {messages.length === 0 && <BaseText variant="body2" color="text.secondary" text="No messages yet" align="center" sx={{ mt: 2 }} />}
+
       {messages.map((msg) => {
         const isOwnMessage = msg.sender.id === currentUserId;
-
         return (
           <Box
             key={msg.id || Math.random()}
@@ -42,21 +80,21 @@ export const ChatMessageList: React.FC<MessageListProps> = ({ messages, currentU
               gap: 1,
               alignItems: "flex-start",
             }}>
-            <Avatar src={msg.sender.avatarUrl || undefined} sx={{ width: 32, height: 32, fontSize: 14 }}>
+            <Avatar src={msg.sender.avatarUrl || undefined} sx={{ width: 32, height: 32, fontSize: 14, bgcolor: theme.palette.chat.avatarBg }}>
               {msg.sender.name[0]}
             </Avatar>
-
             <Paper
               sx={{
                 p: 1,
-                maxWidth: "80%",
-                minWidth: "360px",
-                bgcolor: isOwnMessage ? "primary.main" : "grey.200",
-                color: isOwnMessage ? "primary.contrastText" : "text.primary",
+                minWidth: "150px",
+                maxWidth: { xs: "60%", sm: "45%" },
+                bgcolor: isOwnMessage ? theme.palette.chat.ownMessage : theme.palette.chat.otherMessage,
+                color: isOwnMessage ? theme.palette.primary.contrastText : theme.palette.text.primary,
                 borderRadius: 2,
                 display: "grid",
                 gridTemplateColumns: "1fr auto",
                 gap: 1,
+                wordBreak: "break-word",
               }}>
               <Box>
                 <BaseText variant="subtitle2" text={msg.sender.name} />
@@ -71,6 +109,7 @@ export const ChatMessageList: React.FC<MessageListProps> = ({ messages, currentU
           </Box>
         );
       })}
+      <div ref={messagesEndRef} />
     </Box>
   );
 };

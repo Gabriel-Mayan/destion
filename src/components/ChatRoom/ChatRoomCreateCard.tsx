@@ -7,7 +7,7 @@ import { Card, CardContent } from "@mui/material";
 
 import BaseText from "@components/Bases/Elements/BaseText";
 
-export const CreateChatRoomCard = () => {
+export const ChatRoomCreateCard = () => {
   const router = useRouter();
 
   const handleCreateRoom = () => {
