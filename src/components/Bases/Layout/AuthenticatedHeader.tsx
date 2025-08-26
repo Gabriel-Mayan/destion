@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Container, IconButton, Menu, MenuItem } from "@mui/material";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Box, Container, IconButton, Menu, MenuItem } from "@mui/material";
 
 import Logo from "@components/Bases/UI/Logo";
 import { Avatar } from "@components/Bases/UI/Avatar";
@@ -47,6 +47,7 @@ export default function AuthenticatedHeader() {
         zIndex: 999,
         transition: "all 0.5s",
         position: "sticky",
+        p: 1,
         top: 0,
         boxShadow: 1,
       }}>

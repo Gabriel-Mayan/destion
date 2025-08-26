@@ -54,7 +54,7 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({ chatId, session, i
       }}>
       <ChatHeader creator={initialChatData.creator} participants={initialChatData.participants} chatName={initialChatData.title} />
       <Divider sx={{ mb: 1 }} />
-      <ChatMessageList initialMessages={initialChatData.messages} currentUserId={session?.user.user.id!} chatId={chatId} />
+      <ChatMessageList initialMessages={initialChatData.messages} session={session} chatId={chatId} />
       <ChatMessageSender chatId={chatId} session={session} />
     </Paper>
   );

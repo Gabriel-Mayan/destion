@@ -1,12 +1,15 @@
+/* eslint-disable no-unused-vars */
 "use client";
 
+import { Box } from "@mui/material";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Box, Paper, useTheme } from "@mui/material";
+import { useSession } from "next-auth/react";
 
 import BaseText from "@components/Bases/Elements/BaseText";
-import { Avatar } from "@components/Bases/UI/Avatar";
+import ChatMessage from "@components/Chat/ChatMessage";
 
 import { SocketContext } from "@/context/SocketContext";
+import { Session } from "@/types/next-auth";
 
 interface User {
   id: string;
@@ -23,15 +26,20 @@ interface Message {
 
 interface ChatMessageListProps {
   initialMessages: Message[];
-  currentUserId: string;
+  session: Session;
   chatId: string;
 }
 
-export const ChatMessageList: React.FC<ChatMessageListProps> = ({ initialMessages, currentUserId, chatId }) => {
-  const theme = useTheme();
+export const ChatMessageList: React.FC<ChatMessageListProps> = ({ initialMessages, session, chatId }) => {
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const { socket, socketIsConnected } = useContext(SocketContext);
   const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   useEffect(() => {
     if (!socket || !socketIsConnected) return;
@@ -40,18 +48,24 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({ initialMessage
       setMessages((prev) => [...prev, msg].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()));
     };
 
+    const handleMessageEdit = (editedMsg: Message) => {
+      setMessages((prev) => prev.map((msg) => (msg.id === editedMsg.id ? { ...msg, content: editedMsg.content } : msg)));
+    };
+
+    const handleMessageDelete = (deletedMsg: { id: string }) => {
+      setMessages((prev) => prev.filter((msg) => msg.id !== deletedMsg.id));
+    };
+
     socket.on("message", handleMessage);
+    socket.on("message-edit", handleMessageEdit);
+    socket.on("message-delete", handleMessageDelete);
 
     return () => {
       socket.off("message", handleMessage);
+      socket.off("message-edit", handleMessageEdit);
+      socket.off("message-delete", handleMessageDelete);
     };
   }, [socket, socketIsConnected, chatId]);
-
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
 
   return (
     <Box
@@ -66,44 +80,9 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({ initialMessage
       }}>
       {messages.length === 0 && <BaseText variant="body2" color="text.secondary" text="No messages yet" align="center" sx={{ mt: 2 }} />}
 
-      {messages.map((msg) => {
-        const isOwnMessage = msg.sender.id === currentUserId;
-        return (
-          <Box
-            key={msg.id || Math.random()}
-            sx={{
-              display: "flex",
-              flexDirection: isOwnMessage ? "row-reverse" : "row",
-              gap: 1,
-              alignItems: "flex-start",
-            }}>
-            <Avatar name={msg.sender.name} size={32} isCreator={false} />
-            <Paper
-              sx={{
-                p: 1,
-                minWidth: "150px",
-                maxWidth: { xs: "60%", sm: "45%" },
-                bgcolor: isOwnMessage ? theme.palette.chat.ownMessage : theme.palette.chat.otherMessage,
-                color: isOwnMessage ? theme.palette.primary.contrastText : theme.palette.text.primary,
-                borderRadius: 2,
-                display: "grid",
-                gridTemplateColumns: "1fr auto",
-                gap: 1,
-                wordBreak: "break-word",
-              }}>
-              <Box>
-                <BaseText variant="subtitle2" text={msg.sender.name} />
-                <BaseText variant="body1" text={msg.content} />
-              </Box>
-              <BaseText
-                variant="caption"
-                text={new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                sx={{ alignSelf: "end" }}
-              />
-            </Paper>
-          </Box>
-        );
-      })}
+      {messages.map((msg) => (
+        <ChatMessage key={msg.id || Math.random()} message={msg} session={session} chatId={msg.id!} />
+      ))}
       <div ref={messagesEndRef} />
     </Box>
   );

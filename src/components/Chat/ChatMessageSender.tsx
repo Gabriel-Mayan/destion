@@ -29,7 +29,7 @@ export const ChatMessageSender = ({ chatId, session }: { chatId: string; session
     if (!data.content.trim() || !session) return;
 
     try {
-      await app({ url: "api/chat/send-message", data: { ...data, chatId }, token: session.user.token });
+      await app({ url: "api/message/send", data: { ...data, chatId }, token: session.user.token });
       reset();
     } catch (error: any) {
       showToast({ message: error?.message || "Failed to send message", type: "error" });

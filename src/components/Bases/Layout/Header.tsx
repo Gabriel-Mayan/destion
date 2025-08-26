@@ -43,6 +43,7 @@ export default function Header() {
         transition: "all 0.5s",
         position: "sticky",
         top: 0,
+        p: 1,
         boxShadow: 1,
       }}>
       <Container maxWidth="xl" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
