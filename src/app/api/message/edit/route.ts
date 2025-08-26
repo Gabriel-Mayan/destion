@@ -10,7 +10,7 @@ export async function PATCH(request: NextRequest) {
   const { messageId, content } = await request.json();
 
   try {
-    const resposta = await api({ url: `messages`, method: "POST", data: { content, messageId }, token });
+    const resposta = await api({ url: "messages/update", method: "PATCH", data: { messageId, content }, token });
 
     return NextResponse.json(resposta, { status: 200 });
   } catch (error) {

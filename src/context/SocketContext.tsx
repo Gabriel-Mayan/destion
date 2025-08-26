@@ -43,23 +43,23 @@ export const SocketProvider = ({ children }: SocketProviderType) => {
 
     initialSocket.on("connect", () => {
       console.log("Socket conectado!");
-
       setSocketIsConnected(true);
     });
 
     initialSocket.on("disconnect", () => {
       console.log("Socket desconectado.");
-
       setSocketIsConnected(false);
     });
 
     initialSocket.on("message", (event) => {
+      if (event.type !== "created") return;
+
       const inChat = pathname === `/home/chat/${event.chatId}`;
 
       if (!inChat) {
         showToast({
           type: "info",
-          message: `[${event.chatName}] ${event.sender.name} - ${event.content}`,
+          message: `[${event.message.chat.title}] ${event.message.sender.name} - ${event.message.content}`,
           theme: "colored",
           duration: 5000,
         });
