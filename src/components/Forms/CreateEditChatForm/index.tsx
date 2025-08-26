@@ -18,7 +18,7 @@ import { showToast } from "@/utils/notify.util";
 
 type ChatData = {
   id: string;
-  name: string;
+  title: string;
   description?: string;
   isPublic: boolean;
 };
@@ -40,7 +40,7 @@ export default function CreateEditChatForm({ token, chatData }: CreateChatFormPr
     resolver: zodResolver(schema),
     defaultValues: isEdit
       ? {
-          title: chatData.name,
+          title: chatData.title,
           description: chatData.description || "",
           isPublic: chatData.isPublic,
         }

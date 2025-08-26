@@ -56,9 +56,9 @@ export const ChatRoomCard: React.FC<ChatRoomCardProps> = ({ room, session, onEnt
 
     try {
       await app({
-        url: "api/room/delete",
-        method: "POST",
-        data: { roomId: room.id },
+        url: "api/chat/delete",
+        method: "DELETE",
+        data: { chatId: room.id },
         token: session?.user.token,
       });
       showToast({ type: "success", message: "Room deleted successfully" });
