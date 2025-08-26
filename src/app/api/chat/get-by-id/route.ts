@@ -7,10 +7,10 @@ export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization") || "";
   const token = authHeader.replace("Bearer ", "");
 
-  const { chatId, content } = await request.json();
+  const { chatId } = await request.json();
 
   try {
-    const resposta = await api({ url: `messages/send`, data: { content, chatId }, token });
+    const resposta = await api({ url: `chats/${chatId}`, method: "GET", token });
 
     return NextResponse.json(resposta, { status: 200 });
   } catch (error) {

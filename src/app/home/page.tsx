@@ -17,8 +17,8 @@ export default async function ChatPage() {
 
   return (
     <Container sx={{ mt: 4, mb: 8 }}>
-      <ChatRoomsList title={"My Chats"} rooms={userRooms !== 0 ? userRooms : []} />
-      <ChatRoomsList title={"Public Chats"} rooms={publicRooms !== 0 ? publicRooms : []} />
+      <ChatRoomsList title={"My Chats"} rooms={userRooms !== 0 ? userRooms : []} session={session!} />
+      <ChatRoomsList title={"Public Chats"} rooms={publicRooms !== 0 ? publicRooms : []} session={session!} />
     </Container>
   );
 }
