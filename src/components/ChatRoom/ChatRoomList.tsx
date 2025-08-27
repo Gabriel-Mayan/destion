@@ -24,6 +24,12 @@ interface ChatRoomsListProps {
   isMemberList?: boolean;
 }
 
+interface SocketPayload {
+  type: "created" | "updated" | "deleted";
+  chatId: string;
+  data?: IChatRoom;
+}
+
 export const ChatRoomsList: React.FC<ChatRoomsListProps> = ({ rooms: initialRooms, title, session }) => {
   const router = useRouter();
   const { socket, socketIsConnected } = useContext(SocketContext);
@@ -38,23 +44,31 @@ export const ChatRoomsList: React.FC<ChatRoomsListProps> = ({ rooms: initialRoom
     }
   };
 
+  const sortRooms = (rooms: IChatRoom[]) => rooms.sort((a, b) => new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime());
+
   useEffect(() => {
     if (!socket || !socketIsConnected) return;
 
-    const handleRoomDeleted = (deletedRoom: { id: string }) => {
-      setRooms((prev) => prev.filter((room) => room.id !== deletedRoom.id));
+    const handleSocketRoom = (payload: SocketPayload) => {
+      switch (payload.type) {
+        case "created":
+          if (payload.data) setRooms((prev) => sortRooms([...prev, payload.data!]));
+          break;
+
+        case "updated":
+          if (payload.data) setRooms((prev) => sortRooms(prev.map((room) => (room.id === payload.chatId ? payload.data! : room))));
+          break;
+
+        case "deleted":
+          setRooms((prev) => prev.filter((room) => room.id !== payload.chatId));
+          break;
+      }
     };
 
-    const handleRoomEdited = (editedRoom: IChatRoom) => {
-      setRooms((prev) => prev.map((room) => (room.id === editedRoom.id ? { ...room, ...editedRoom } : room)));
-    };
-
-    socket.on("deleted-room", handleRoomDeleted);
-    socket.on("edited-room", handleRoomEdited);
+    socket.on("chat", handleSocketRoom);
 
     return () => {
-      socket.off("deleted-room", handleRoomDeleted);
-      socket.off("edited-room", handleRoomEdited);
+      socket.off("chat", handleSocketRoom);
     };
   }, [socket, socketIsConnected]);
 
