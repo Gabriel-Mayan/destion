@@ -16,6 +16,7 @@ interface Message {
   id: string;
   content: string;
   createdAt: string;
+  deletedAt: string;
   sender: User;
 }
 

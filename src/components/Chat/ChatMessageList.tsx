@@ -6,6 +6,8 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import BaseText from "@components/Bases/Elements/BaseText";
 import ChatMessage from "@components/Chat/ChatMessage";
 
+import { formatMessageData } from "@utils/formatter.util";
+
 import { SocketContext } from "@/context/SocketContext";
 import { Session } from "@/types/next-auth";
 
@@ -15,11 +17,12 @@ interface User {
   avatarUrl: string | null;
 }
 
-interface Message {
+export interface Message {
   id?: string;
   sender: User;
   content: string;
   createdAt: string;
+  deletedAt: string;
   chat?: { id: string };
 }
 
@@ -39,7 +42,7 @@ interface SocketPayload {
 export const ChatMessageList: React.FC<ChatMessageListProps> = ({ initialMessages, session, chatId }) => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const { socket, socketIsConnected } = useContext(SocketContext);
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<Message[]>(initialMessages.map((message) => formatMessageData(message)));
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -56,19 +59,21 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({ initialMessage
       switch (payload.type) {
         case "created":
           if (payload.message) {
-            setMessages((prev) => [...prev, payload.message!].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()));
+            setMessages((prev) =>
+              [...prev, formatMessageData(payload.message!)].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+            );
           }
           break;
 
         case "updated":
           if (payload.message) {
-            setMessages((prev) => prev.map((msg) => (msg.id === payload.message!.id ? { ...msg, content: payload.message!.content } : msg)));
+            setMessages((prev) => prev.map((msg) => (msg.id === payload.message!.id ? formatMessageData(payload.message!) : msg)));
           }
           break;
 
         case "deleted":
-          if (payload.messageId) {
-            setMessages((prev) => prev.filter((msg) => msg.id !== payload.messageId));
+          if (payload.message) {
+            setMessages((prev) => prev.map((msg) => (msg.id === payload.message!.id ? formatMessageData(payload.message!) : msg)));
           }
           break;
       }
@@ -82,16 +87,7 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({ initialMessage
   }, [socket, socketIsConnected, chatId]);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 1,
-        px: 1,
-        flex: 1,
-        overflowY: "auto",
-        maxHeight: "60vh",
-      }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 1, flex: 1, overflowY: "auto", maxHeight: "60vh" }}>
       {messages.length === 0 && <BaseText variant="body2" color="text.secondary" text="No messages yet" align="center" sx={{ mt: 2 }} />}
 
       {messages.map((msg) => (

@@ -1,3 +1,5 @@
+import { Message } from "@components/Chat/ChatMessageList";
+
 export function formatLastActivity(timestamp: string | Date) {
   const last = new Date(timestamp).getTime();
   const now = Date.now();
@@ -13,3 +15,24 @@ export function formatLastActivity(timestamp: string | Date) {
   if (minutes > 0) return `${minutes}m${minutes > 1 ? "s" : ""} ago`;
   return "Just now";
 }
+
+export const formatMessageData = (message: Message) => {
+  const dateUtc = new Date(message.deletedAt || message.createdAt);
+  const createdDateUtc = new Date(message.createdAt);
+
+  const time = dateUtc.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  const createdAt = createdDateUtc.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  const content = message.deletedAt ? `This message was deleted at ${time}` : message.content;
+
+  return { ...message, content, createdAt };
+};

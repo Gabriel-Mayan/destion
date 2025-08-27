@@ -116,11 +116,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, session, chatId }) =
           <BaseText variant="body1" text={message.content} />
         </Box>
 
-        <BaseText
-          variant="caption"
-          text={new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-          sx={{ alignSelf: "end" }}
-        />
+        <BaseText variant="caption" text={message.createdAt} sx={{ alignSelf: "end" }} />
       </Paper>
     </Box>
   );
