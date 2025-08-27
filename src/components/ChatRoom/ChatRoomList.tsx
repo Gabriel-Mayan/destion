@@ -13,6 +13,8 @@ import { ChatRoomCard, IChatRoom } from "@components/ChatRoom/ChatRoomCard";
 
 import { showToast } from "@utils/notify.util";
 
+import { ChatRoomCreateCard } from "./ChatRoomCreateCard";
+
 import { Session } from "@/types/next-auth";
 
 interface ChatRoomsListProps {
@@ -56,8 +58,6 @@ export const ChatRoomsList: React.FC<ChatRoomsListProps> = ({ rooms: initialRoom
     };
   }, [socket, socketIsConnected]);
 
-  if (!rooms || rooms.length === 0) return null;
-
   return (
     <Box sx={{ mb: 4, px: { xs: 2, sm: 0 } }}>
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
@@ -75,9 +75,11 @@ export const ChatRoomsList: React.FC<ChatRoomsListProps> = ({ rooms: initialRoom
             sm: "repeat(auto-fill, minmax(260px, 1fr))",
           },
         }}>
-        {rooms.map((room) => (
-          <ChatRoomCard key={room.id} room={room} onJoin={handleEnterRoom} session={session} />
-        ))}
+        {rooms.length ? (
+          rooms.map((room) => <ChatRoomCard key={room.id} room={room} onJoin={handleEnterRoom} session={session} />)
+        ) : (
+          <ChatRoomCreateCard />
+        )}
       </Box>
     </Box>
   );
