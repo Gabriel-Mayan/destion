@@ -11,7 +11,7 @@ export const ChatRoomCreateCard = () => {
   const router = useRouter();
 
   const handleCreateRoom = () => {
-    router.push("/home/chat/create");
+    router.push("/home/settings/chat/create");
   };
 
   return (
@@ -36,7 +36,7 @@ export const ChatRoomCreateCard = () => {
       onClick={handleCreateRoom}>
       <CardContent sx={{ textAlign: "center" }}>
         <Add fontSize="large" color="primary" />
-        <BaseText variant="body1" font="raleway" text="Create New Room" sx={{ mt: 1 }} />
+        <BaseText variant="body1" font="raleway" text="Create New Chat Room" sx={{ mt: 1 }} />
       </CardContent>
     </Card>
   );
