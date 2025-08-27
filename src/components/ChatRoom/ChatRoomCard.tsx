@@ -13,6 +13,7 @@ import { Avatar } from "@components/Bases/UI/Avatar";
 import { app } from "@services/app.service";
 
 import { showToast } from "@utils/notify.util";
+import { formatLastActivity } from "@utils/formatter.util";
 
 import { Session } from "@/types/next-auth";
 
@@ -137,7 +138,7 @@ export const ChatRoomCard: React.FC<ChatRoomCardProps> = ({ room, session, onEnt
 
           <Box ml="auto" display="flex" alignItems="center" gap={0.5}>
             <Message fontSize="small" />
-            <BaseText variant="body2" text={room.lastActivity} sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" } }} />
+            <BaseText variant="body2" text={formatLastActivity(room.lastActivity)} sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" } }} />
           </Box>
         </Box>
       </CardContent>
